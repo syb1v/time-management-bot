@@ -1,0 +1,44 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "study-time-manager"
+version = "0.1.0"
+description = "Private Telegram study planner"
+requires-python = ">=3.12"
+dependencies = [
+  "aiogram>=3.15,<4",
+  "aiohttp>=3.11,<4",
+  "aiosqlite>=0.20,<1",
+  "apscheduler>=3.10,<4",
+  "matplotlib>=3.9,<4",
+  "pydantic-settings>=2.7,<3",
+  "sqlalchemy>=2.0,<3",
+]
+
+[project.optional-dependencies]
+dev = ["mypy>=1.14,<2", "pytest>=8.3,<9", "pytest-asyncio>=0.25,<1", "ruff>=0.9,<1"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/time_manager"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+packages = ["time_manager"]
+
+[[tool.mypy.overrides]]
+module = ["apscheduler.*", "matplotlib.*"]
+ignore_missing_imports = true
