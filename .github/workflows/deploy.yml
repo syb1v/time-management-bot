@@ -34,6 +34,7 @@ jobs:
         run: |
           set -eu
           install -d -m 700 /opt/time-manager/data
+          chown -R 10001:10001 /opt/time-manager/data
           umask 077
           {
             printf "BOT_TOKEN=%s\\n" "$BOT_TOKEN"
