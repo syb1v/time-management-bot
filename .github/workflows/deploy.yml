@@ -39,7 +39,7 @@ jobs:
           {
             printf "BOT_TOKEN=%s\\n" "$BOT_TOKEN"
             printf "SOTKA_API_TOKEN=%s\\n" "$SOTKA_API_TOKEN"
-            printf "DATABASE_URL=sqlite+aiosqlite:///data/time-manager.db\\n"
+            printf "DATABASE_URL=sqlite+aiosqlite:////app/data/time-manager.db\\n"
             printf "STUDENT_ID=1359806027\\nOWNER_ID=6499614618\\nTIMEZONE=Europe/Moscow\\n"
             printf "SCHOOL_SCHEDULE_PATH=raspisanie_11g.md\\nSOTKA_SCHEDULE_PATH=vebinary_sotka_sentyabr_2026.md\\nSOTKA_SYNC_DAYS=90\\n"
           } > /opt/time-manager/.env
