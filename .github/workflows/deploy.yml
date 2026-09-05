@@ -36,7 +36,11 @@ jobs:
       - name: Upload application
         run: |
           tar --exclude=.git --exclude=.venv --exclude=data --exclude='*.har' -czf /tmp/time-manager.tar.gz .
-          scp /tmp/time-manager.tar.gz "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/tmp/time-manager.tar.gz"
+          for attempt in 1 2 3 4 5; do
+            scp -o ConnectTimeout=20 -o ConnectionAttempts=1 /tmp/time-manager.tar.gz "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/tmp/time-manager.tar.gz" && break
+            test "$attempt" -eq 5 && exit 1
+            sleep 10
+          done
       - name: Deploy Docker service
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
@@ -44,8 +48,12 @@ jobs:
         run: |
           printf '%s\n' "$BOT_TOKEN" > /tmp/bot-token
           printf '%s\n' "$SOTKA_API_TOKEN" > /tmp/sotka-token
-          scp /tmp/bot-token /tmp/sotka-token "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/tmp/"
-          ssh "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" 'set -eu
+          for attempt in 1 2 3 4 5; do
+            scp -o ConnectTimeout=20 -o ConnectionAttempts=1 /tmp/bot-token /tmp/sotka-token "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/tmp/" && break
+            test "$attempt" -eq 5 && exit 1
+            sleep 10
+          done
+          ssh -o ConnectTimeout=20 -o ConnectionAttempts=1 "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" 'set -eu
             install -d -m 700 /opt/time-manager/data
             tar -xzf /tmp/time-manager.tar.gz -C /opt/time-manager
             umask 077
