@@ -1,0 +1,20 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "modelhub": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "ModelHub",
+      "options": {
+        "baseURL": "https://modelhub.my/v1",
+        "apiKey": "sk-mh-5f9850e19e6d438924ae35edd8fc27fd422cef193ba557c599add99dba4b8b07"
+      },
+      "models": {
+        "claude-opus-5": { "name": "Claude Opus 5" },
+        "glm-5.3": { "name": "GLM-5.3" },
+        "gpt-5.6-sol": { "name": "GPT-5.6 Sol" },
+        "deepseek-v4-pro-new": { "name": "DeepSeek V4 Pro" },
+        "kimi-k3": { "name": "Kimi K3"}
+      }
+    }
+  }
+}
