@@ -36,7 +36,7 @@ class InputState(StatesGroup):
 def _callback_chat_id(callback: CallbackQuery) -> int:
     if not isinstance(callback.message, Message):
         raise ValueError("callback has no accessible chat message")
-    return _callback_chat_id(callback)
+    return callback.message.chat.id
 
 
 def _callback_data(callback: CallbackQuery) -> str:
