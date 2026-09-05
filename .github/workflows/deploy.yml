@@ -24,48 +24,27 @@ jobs:
 
   deploy:
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, time-manager, production]
     steps:
       - uses: actions/checkout@v4
-      - name: Install SSH key
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
-      - name: Trust VPS host key
-        run: ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts
-      - name: Upload application
-        run: |
-          tar --exclude=.git --exclude=.venv --exclude=data --exclude='*.har' -czf /tmp/time-manager.tar.gz .
-          for attempt in 1 2 3 4 5; do
-            scp -o ConnectTimeout=20 -o ConnectionAttempts=1 /tmp/time-manager.tar.gz "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/tmp/time-manager.tar.gz" && break
-            test "$attempt" -eq 5 && exit 1
-            sleep 10
-          done
       - name: Deploy Docker service
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           SOTKA_API_TOKEN: ${{ secrets.SOTKA_API_TOKEN }}
         run: |
-          printf '%s\n' "$BOT_TOKEN" > /tmp/bot-token
-          printf '%s\n' "$SOTKA_API_TOKEN" > /tmp/sotka-token
-          for attempt in 1 2 3 4 5; do
-            scp -o ConnectTimeout=20 -o ConnectionAttempts=1 /tmp/bot-token /tmp/sotka-token "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/tmp/" && break
-            test "$attempt" -eq 5 && exit 1
-            sleep 10
-          done
-          ssh -o ConnectTimeout=20 -o ConnectionAttempts=1 "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" 'set -eu
-            install -d -m 700 /opt/time-manager/data
-            tar -xzf /tmp/time-manager.tar.gz -C /opt/time-manager
-            umask 077
-            {
-              printf "BOT_TOKEN="; tr -d "\\n" < /tmp/bot-token; printf "\\n"
-              printf "SOTKA_API_TOKEN="; tr -d "\\n" < /tmp/sotka-token; printf "\\n"
-              printf "DATABASE_URL=sqlite+aiosqlite:///data/time-manager.db\\n"
-              printf "STUDENT_ID=1359806027\\nOWNER_ID=6499614618\\nTIMEZONE=Europe/Moscow\\n"
-              printf "SCHOOL_SCHEDULE_PATH=raspisanie_11g.md\\nSOTKA_SCHEDULE_PATH=vebinary_sotka_sentyabr_2026.md\\nSOTKA_SYNC_DAYS=90\\n"
-            } > /opt/time-manager/.env
-            rm -f /tmp/bot-token /tmp/sotka-token /tmp/time-manager.tar.gz
-            cd /opt/time-manager
-            docker compose up -d --build --remove-orphans
-            docker compose ps
-            docker compose logs --no-color --tail=40 bot'
+          set -eu
+          install -d -m 700 /opt/time-manager/data
+          umask 077
+          {
+            printf "BOT_TOKEN=%s\\n" "$BOT_TOKEN"
+            printf "SOTKA_API_TOKEN=%s\\n" "$SOTKA_API_TOKEN"
+            printf "DATABASE_URL=sqlite+aiosqlite:///data/time-manager.db\\n"
+            printf "STUDENT_ID=1359806027\\nOWNER_ID=6499614618\\nTIMEZONE=Europe/Moscow\\n"
+            printf "SCHOOL_SCHEDULE_PATH=raspisanie_11g.md\\nSOTKA_SCHEDULE_PATH=vebinary_sotka_sentyabr_2026.md\\nSOTKA_SYNC_DAYS=90\\n"
+          } > /opt/time-manager/.env
+          cd "$GITHUB_WORKSPACE"
+          rsync -a --delete --exclude=data/ --exclude='*.har' --exclude=.env ./ /opt/time-manager/
+          cd /opt/time-manager
+          docker compose up -d --build --remove-orphans
+          docker compose ps
+          docker compose logs --no-color --tail=40 bot
