@@ -14,7 +14,7 @@ dependencies = [
   "apscheduler>=3.10,<4",
   "matplotlib>=3.9,<4",
   "pydantic-settings>=2.7,<3",
-  "sqlalchemy>=2.0,<3",
+  "sqlalchemy[asyncio]>=2.0,<3",
 ]
 
 [project.optional-dependencies]
