@@ -13,7 +13,7 @@
 ## Global Constraints
 
 - Use `Europe/Moscow` for user-facing dates and timezone-aware UTC in storage.
-- Permit only Telegram IDs `111111111` and `222222222`.
+- Permit only the configured `STUDENT_ID` and `OWNER_ID` Telegram IDs.
 - Preserve sleep before allocating optional study.
 - Do not read browser cookies or persist API credentials in source control.
 - Use Telegram HTML formatting and escape all dynamic values.

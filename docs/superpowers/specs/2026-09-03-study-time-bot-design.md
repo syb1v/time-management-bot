@@ -6,8 +6,8 @@ Build a private Telegram bot that creates a realistic Moscow-time study plan for
 
 ## Users and access
 
-- Telegram ID `111111111` is the student and can manage plans, settings, completion marks, and statistics.
-- Telegram ID `222222222` is the owner and can view plans/statistics and manage global synchronization.
+- The configured student Telegram ID (`STUDENT_ID`) can manage plans, settings, completion marks, and statistics.
+- The configured owner Telegram ID (`OWNER_ID`) can view plans/statistics and manage global synchronization.
 - Every message and callback is rejected before handler execution unless the sender is on the allowlist.
 
 ## Architecture
